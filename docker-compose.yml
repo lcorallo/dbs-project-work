@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  oracle-xe:
+    image: container-registry.oracle.com/database/express:21.3.0-xe
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+    ports:
+      - 1521:1521
+      - 5500:5500
+    environment:
+      - ORACLE_SID=XE
+      - ORACLE_PWD=password123
+
+
+  appsmith:
+     image: index.docker.io/appsmith/appsmith-ee
+     container_name: appsmith
+     ports:
+         - "80:80"
+         - "443:443"
+     volumes:
+         - ./stacks:/appsmith-stacks
+     restart: unless-stopped
+
+volumes:
+  oracle-data:
