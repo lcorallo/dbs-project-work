@@ -4,4 +4,5 @@
 2. follow instructions to set system admin
 3. execute LOGISTICS_USER.sql with system admin profile;
 4. Connect WITH LOGISTICS to specific NODE.
-5. Execute LOGISTICS.SQL
+5. Execute LOGISTICS_DEFINITION.SQL
+6. Execute LOGISTICS_POPULATION.SQL
