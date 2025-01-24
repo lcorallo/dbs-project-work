@@ -1,3 +1,7 @@
+DROP TABLE F_Order_Demand;
+/
+DROP TABLE F_Team_Score;
+/
 DROP TABLE D_Placement_Mode;
 /
 DROP TABLE D_Order_Mode;
@@ -7,10 +11,6 @@ DROP TABLE D_Organization;
 DROP TABLE D_Area;
 /
 DROP TABLE D_Time;
-/
-DROP TABLE F_Order_Demand;
-/
-DROP TABLE F_Team_Score;
 /
 CREATE TABLE D_Placement_Mode (
     ID INTEGER NOT NULL,
