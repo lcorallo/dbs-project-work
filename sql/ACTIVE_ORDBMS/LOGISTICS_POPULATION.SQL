@@ -1,3 +1,4 @@
+-- Function to generate a random first name from a predefined list of male and female names
 CREATE OR REPLACE FUNCTION generate_random_name
 RETURN VARCHAR2
 IS
@@ -14,11 +15,13 @@ IS
         'Paola', 'Simona', 'Caterina'   -- 15 Female Names
     );
 BEGIN
-    -- Generate a random index and pick a name
+    -- Generate a random index and pick a name from the list
     RETURN name(TRUNC(DBMS_RANDOM.VALUE(1, name.COUNT + 1)));
 END generate_random_name;
 /
 
+
+-- Function to generate a random surname from a predefined list of male and female surnames
 CREATE OR REPLACE FUNCTION generate_random_surname
 RETURN VARCHAR2
 IS
@@ -35,28 +38,34 @@ IS
         'Rinaldi', 'Ruggiero', 'Basilio'   -- 15 Female Surnames
     );
 BEGIN
+    -- Generate a random index and pick a surname from the list
     RETURN surname(TRUNC(DBMS_RANDOM.VALUE(1, surname.COUNT + 1)));
 END generate_random_surname;
 /
+
+
+-- Function to generate a random email address based on a given name and surname
 CREATE OR REPLACE FUNCTION generate_random_email (
     name IN VARCHAR2,
     surname IN VARCHAR2
 )
 RETURN VARCHAR2
 IS
+    -- Define a nested table type for email providers
     TYPE PROVIDER_TY IS TABLE OF VARCHAR2(20);
     providers PROVIDER_TY := PROVIDER_TY('gmail.com', 'live.it', 'outlook.com', 'libero.it', 'hotmail.com');
     generated_provider VARCHAR(20);
 BEGIN
-
+    -- Randomly choose an email provider
     generated_provider := providers(TRUNC(DBMS_RANDOM.VALUE(1, providers.COUNT + 1)));
 
+    -- Generate and return a formatted email address
     RETURN LOWER(name || '.' || surname || TO_CHAR(TRUNC(DBMS_RANDOM.VALUE(1, 1000))) || '@' || generated_provider);
-
 END generate_random_email;
 /
 
 
+-- Insert data into the COMPANY table along with predefined services for the company
 INSERT INTO COMPANY (name, services) 
 VALUES (
     'Brightway', 
@@ -73,14 +82,14 @@ VALUES (
         SERVICE_TY(10, 'Cold Chain Logistics', 'Shipping for temperature-sensitive goods')
     )
 );
--- SELECT c.NAME, s.CODE, s.NAME, s.DESCRIPTION
--- FROM COMPANY c, TABLE(c.services) s;
 
+
+-- Inserting multiple operational centers related to 'Brightway' company
 INSERT INTO OPERATIONAL_CENTER (code, name, address, companyRef) 
 VALUES (1, 'AAA000', Address_TY('Via Roma, 51', 'Bari', 'BA', '70124'), (SELECT REF(c) FROM company c WHERE c.name = 'Brightway'));
 
 INSERT INTO OPERATIONAL_CENTER (code, name, address, companyRef) 
-VALUES (2, 'BBB001', Address_TY('Corso Vittorio Emanuele, 12', 'BA', 'BA', '70100'), (SELECT REF(c) FROM company c WHERE c.name = 'Brightway'));
+VALUES (2, 'BBB001', Address_TY('Corso Vittorio Emanuele, 12', 'Bari', 'BA', '70100'), (SELECT REF(c) FROM company c WHERE c.name = 'Brightway'));
 
 INSERT INTO OPERATIONAL_CENTER (code, name, address, companyRef) 
 VALUES (3, 'CCC002', Address_TY('Via Dante, 44', 'Milano', 'MI', '20121'), (SELECT REF(c) FROM company c WHERE c.name = 'Brightway'));
@@ -122,6 +131,7 @@ INSERT INTO OPERATIONAL_CENTER (code, name, address, companyRef)
 VALUES (15, 'OOO014', Address_TY('Via Vittorio Veneto, 7', 'Brescia', 'BS', '25121'), (SELECT REF(c) FROM company c WHERE c.name = 'Brightway'));
 
 
+-- Loop to insert 150 teams into the TEAM table, each with random data (names, surnames, scores)
 BEGIN
     FOR i IN 1..150 LOOP
         INSERT INTO TEAM (code, name, noOperations, score, centerRef, members) VALUES (
@@ -143,6 +153,7 @@ END;
 /
 
 
+-- Inserting 400 customers with their random names, surnames, emails, and account details
 DECLARE
     v_name VARCHAR2(20);
     v_surname VARCHAR2(20);
@@ -153,22 +164,25 @@ BEGIN
         v_surname := generate_random_surname();
         v_email := generate_random_email(v_name, v_surname);
        
-
+        -- Insert customer data
         INSERT INTO CUSTOMER (code, name, surname, email, type) VALUES (
             i, v_name, v_surname, v_email, 'Individual'
         );
 
-        INSERT INTO ACCOUNT (code, customerRef) VALUES (
-            TO_NUMBER(TO_CHAR(i) || RPAD(TO_CHAR(TRUNC(DBMS_RANDOM.VALUE(1, 1000))), 4, '0')),
-            (SELECT REF(C) FROM CUSTOMER C WHERE code = i)
-        );
+        -- Insert two accounts for each customer
         INSERT INTO ACCOUNT (code, customerRef) VALUES (
             TO_NUMBER(TO_CHAR(i) || RPAD(TO_CHAR(TRUNC(DBMS_RANDOM.VALUE(1, 1000))), 4, '0')),
             (SELECT REF(C) FROM CUSTOMER C WHERE code = i)
         );
 
+        -- Duplicate the account creation for each customer
+        INSERT INTO ACCOUNT (code, customerRef) VALUES (
+            TO_NUMBER(TO_CHAR(i) || RPAD(TO_CHAR(TRUNC(DBMS_RANDOM.VALUE(1, 1000))), 4, '0')),
+            (SELECT REF(C) FROM CUSTOMER C WHERE code = i)
+        );
     END LOOP;
 
+    -- Insert 100 more customers of 'Business' type with similar steps
     FOR i IN 401..500 LOOP
         v_name := generate_random_name();
         v_surname := generate_random_surname();
@@ -178,21 +192,23 @@ BEGIN
             i, v_name, v_surname, v_email, 'Business'
         );
 
-        
-        INSERT INTO ACCOUNT (code, customerRef) VALUES (
-            TO_NUMBER(TO_CHAR(i) || RPAD(TO_CHAR(TRUNC(DBMS_RANDOM.VALUE(1, 1000))), 4, '0')),
-            (SELECT REF(C) FROM CUSTOMER C WHERE code = i)
-        );
+        -- Insert accounts for each customer
         INSERT INTO ACCOUNT (code, customerRef) VALUES (
             TO_NUMBER(TO_CHAR(i) || RPAD(TO_CHAR(TRUNC(DBMS_RANDOM.VALUE(1, 1000))), 4, '0')),
             (SELECT REF(C) FROM CUSTOMER C WHERE code = i)
         );
 
+        -- Duplicate the account creation for each business customer
+        INSERT INTO ACCOUNT (code, customerRef) VALUES (
+            TO_NUMBER(TO_CHAR(i) || RPAD(TO_CHAR(TRUNC(DBMS_RANDOM.VALUE(1, 1000))), 4, '0')),
+            (SELECT REF(C) FROM CUSTOMER C WHERE code = i)
+        );
     END LOOP;
 END;
 /
 
 
+-- Function to generate random order details based on the provided input parameters
 CREATE OR REPLACE FUNCTION generate_random_order (
     code IN INTEGER,
     random_team_ref IN REF TEAM_TY,
@@ -200,6 +216,7 @@ CREATE OR REPLACE FUNCTION generate_random_order (
 )
 RETURN ORDER_TY
 IS
+    -- Define possible order options and placement methods
     TYPE ORDERS_OPTIONS_TY IS TABLE OF VARCHAR2(10);
     TYPE ORDERS_PLACEMENT_TY IS TABLE OF VARCHAR2(10);
 
@@ -209,8 +226,10 @@ IS
     random_account_ref REF ACCOUNT_TY;
     random_delivery_time INTERVAL DAY TO SECOND;
 BEGIN
+    -- Select random account reference from ACCOUNT table
     SELECT REF(A) INTO random_account_ref FROM ACCOUNT A ORDER BY DBMS_RANDOM.VALUE FETCH FIRST 1 ROWS ONLY;
 
+    -- Generate and return a random order with specified fields
     RETURN ORDER_TY(
         code, 
         ordersOptions(TRUNC(DBMS_RANDOM.VALUE(1, ordersOptions.COUNT + 1))),
@@ -225,6 +244,7 @@ END generate_random_order;
 /
 
 
+-- Generating random feedback for operation orders
 DECLARE
     TYPE FEEDBACK_TY IS TABLE OF VARCHAR2(200);
     random_team_ref REF TEAM_TY;
@@ -245,15 +265,16 @@ DECLARE
     );
     
 BEGIN
+    -- Loop to insert random operation orders with feedback into OPERATION_ORDER table
     FOR i IN 1..35400 LOOP
         SELECT REF(T) INTO random_team_ref FROM TEAM T ORDER BY DBMS_RANDOM.VALUE FETCH FIRST 1 ROWS ONLY;
         SELECT INTERVAL '1' HOUR * ROUND(DBMS_RANDOM.VALUE(0, 240)) AS random_hour_interval INTO random_delivery_time FROM dual;
 
-        -- Generate random feedback index and select feedback message
+        -- Generate random feedback index and insert order
         DECLARE
             random_feedback_index NUMBER := TRUNC(DBMS_RANDOM.VALUE(1, feedback.COUNT + 1));
         BEGIN
-            -- Insert operation order with randomly generated values
+            -- Insert operation order with random feedback
             INSERT INTO OPERATION_ORDER 
             VALUES (
                 generate_random_order(
@@ -268,6 +289,7 @@ BEGIN
         END;
     END LOOP;
 
+    -- Insert remaining operation orders without feedback
     FOR i IN 35401..36000 LOOP
         SELECT REF(T) INTO random_team_ref FROM TEAM T ORDER BY DBMS_RANDOM.VALUE FETCH FIRST 1 ROWS ONLY;
         INSERT INTO OPERATION_ORDER VALUES (generate_random_order(i, random_team_ref, NULL));
