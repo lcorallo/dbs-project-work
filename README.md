@@ -52,3 +52,23 @@ A step-by-step guide to set up and run your project.
 1. Execute tests using:
    - `ACTIVE_ORDBMS/LOGISTICS_TEST.sql` **with user**: `LOGISTICS` **to the node**: `oracle-xe`
 
+
+### Step 9: 🌐 Complete Setup and Configure Datasources
+1. **Connect to localhost:80** and complete the onboarding process.
+   - Open your browser and navigate to `http://localhost:80`.
+   - Follow the on-screen instructions to complete the initial setup and login.
+
+2. **After login** into the workspace:
+   - Create a **new project**.
+   - Import the `APP.js` file into your project.
+   - For help on importing the `APP.js` file, visit the [Appsmith Backup & Restore Documentation](https://docs.appsmith.com/advanced-concepts/more/backup-restore).
+
+3. **Configure Datasources properly**:
+   - **ACTIVE_ORDBMS**:
+     - Username: `LOGISTICS`
+     - Password: `password`
+     - Database: `XE`
+   - **DATA_WAREHOUSE**:
+     - Username: `LOGISTICS_DW`
+     - Password: `password`
+     - Database: `XE`
