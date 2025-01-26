@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  oracle-xe:
+    image: container-registry.oracle.com/database/express:21.3.0-xe
+    volumes:
+      - ./volumes/oltp/data:/opt/oracle/oradata
+      - ./volumes/oltp/admin:/opt/oracle/homes/OraDBHome21cXE/network/admin:rw
+    ports:
+      - 1521:1521
+      - 5500:5500
+    environment:
+      - ORACLE_SID=XE
+      - ORACLE_PWD=password123
+
+  oracle-dw:
+    image: container-registry.oracle.com/database/express:21.3.0-xe
+    volumes:
+      - ./volumes/dw/data:/opt/oracle/oradata
+      - ./volumes/dw/admin:/opt/oracle/homes/OraDBHome21cXE/network/admin:rw
+    ports:
+      - 1522:1521
+      - 5501:5500
+    environment:
+      - ORACLE_SID=XE
+      - ORACLE_PWD=password123
+  appsmith:
+     image: index.docker.io/appsmith/appsmith-ee
+     container_name: appsmith
+     ports:
+         - "80:80"
+         - "443:443"
+     volumes:
+         - ./volumes/fe/stacks:/appsmith-stacks:rw
+     restart: unless-stopped
