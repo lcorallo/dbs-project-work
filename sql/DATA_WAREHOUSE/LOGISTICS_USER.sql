@@ -1,15 +1,3 @@
--- Step 1: Verify the current value of the 'common_user_prefix' parameter
--- This parameter determines the prefix for common users (default is 'C##').
-SELECT * 
-FROM V$PARAMETER 
-WHERE NAME = 'common_user_prefix';
-/
-
--- Step 2: Remove the prefix requirement for common user names.
--- Note: After executing this command, a database restart is required for the change to take effect.
-ALTER SYSTEM SET common_user_prefix = '' SCOPE = SPFILE;
-/
-
 -- Step 3: Create a new user 'LOGISTICS_DW' for the Data Warehouse with required settings
 CREATE USER "LOGISTICS_DW"
     PROFILE "DEFAULT"                               -- Assign the default profile to the user
