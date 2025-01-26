@@ -15,12 +15,11 @@ ORDER BY
 -- Ops2:
 -- Objective: Evaluate the performance of different order and placement modes 
 -- by analyzing their respective order counts.
-SELECT D_ORDER_MODE.Type, D_PLACEMENT_MODE.Type, COUNT(F.NOORDER) AS N
+SELECT D_ORDER_MODE.Type as ORDER_MODE, D_PLACEMENT_MODE.Type as PLACEMENT_MODE, COUNT(F.NOORDER) AS N
 FROM F_ORDER_DEMAND F
 INNER JOIN D_ORDER_MODE ON D_ORDER_MODE.ID = F.ORDER_MODE_ID
 INNER JOIN D_PLACEMENT_MODE ON D_PLACEMENT_MODE.ID = F.PLACEMENT_MODE_ID
 GROUP BY CUBE(D_ORDER_MODE.Type, D_PLACEMENT_MODE.Type)
-
 
 -- Ops3:
 -- Objective: Assess the operational demand across time (month and year) and 

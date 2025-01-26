@@ -66,7 +66,6 @@ CREATE OR REPLACE TYPE COMPANY_TY AS OBJECT (
 CREATE TABLE COMPANY OF COMPANY_TY (
   CONSTRAINT COMPANY_PK PRIMARY KEY (name) ENABLE   -- Primary key constraint on 'name'
 ) NESTED TABLE services STORE as services_TAB;      -- Store services in a nested table
-
 /
 
 -- Step 4: Create the ADDRESS_TY object type to represent an address
